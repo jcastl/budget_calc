@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
+    <div class="container mx-auto px-4 py-8 max-w-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Budget Calculator</h1>
+            <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                </svg>
+            </button>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <div class="mb-4">
+                <label for="income" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Monthly Income ($)</label>
+                <input type="number" id="income" value="10000" min="0" 
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Budget Breakdown</h2>
+            <div class="space-y-4">
+                <div id="titheSection" class="border-l-4 border-blue-500 pl-3">
+                    <p class="font-medium text-gray-700 dark:text-gray-300">Tithe (10%)</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">$1,000</p>
+                </div>
+                <div id="savingsSection" class="border-l-4 border-green-500 pl-3">
+                    <p class="font-medium text-gray-700 dark:text-gray-300">Savings (10%)</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">$1,000</p>
+                </div>
+                <div id="billsSection" class="border-l-4 border-red-500 pl-3">
+                    <p class="font-medium text-gray-700 dark:text-gray-300">Bills (Fixed)</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">$7,400</p>
+                </div>
+                <div id="discretionarySection" class="border-l-4 border-purple-500 pl-3">
+                    <p class="font-medium text-gray-700 dark:text-gray-300">Discretionary Spending</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">$600</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Budget Visualization</h2>
+            <div class="h-64">
+                <canvas id="budgetChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize variables
+        const incomeInput = document.getElementById('income');
+        const titheSection = document.getElementById('titheSection');
+        const savingsSection = document.getElementById('savingsSection');
+        const billsSection = document.getElementById('billsSection');
+        const discretionarySection = document.getElementById('discretionarySection');
+        const fixedBills = 7400;
+        let budgetChart;
+
+        // Calculate budget based on income
+        function calculateBudget(income) {
+            const tithe = income * 0.1;
+            const savings = income * 0.1;
+            const bills = fixedBills;
+            const discretionary = income - (tithe + savings + bills);
+            
+            return {
+                tithe,
+                savings,
+                bills,
+                discretionary
+            };
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Calculate percentage
+        function calculatePercentage(amount, total) {
+            return ((amount / total) * 100).toFixed(1) + '%';
+        }
+
+        // Update UI with calculation results
+        function updateUI(income) {
+            const budget = calculateBudget(income);
+            
+            // Update text display
+            titheSection.querySelector('p:last-child').textContent = 
+                `${formatCurrency(budget.tithe)} (${calculatePercentage(budget.tithe, income)})`;
+            
+            savingsSection.querySelector('p:last-child').textContent = 
+                `${formatCurrency(budget.savings)} (${calculatePercentage(budget.savings, income)})`;
+            
+            billsSection.querySelector('p:last-child').textContent = 
+                `${formatCurrency(budget.bills)} (${calculatePercentage(budget.bills, income)})`;
+            
+            discretionarySection.querySelector('p:last-child').textContent = 
+                `${formatCurrency(budget.discretionary)} (${calculatePercentage(budget.discretionary, income)})`;
+            
+            // Update chart
+            updateChart(budget);
+        }
+
+        // Initialize and update chart
+        function updateChart(budget) {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (budgetChart) {
+                budgetChart.destroy();
+            }
+            
+            // Create new chart
+            budgetChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Tithe', 'Savings', 'Bills', 'Discretionary'],
+                    datasets: [{
+                        label: 'Budget Allocation',
+                        data: [budget.tithe, budget.savings, budget.bills, budget.discretionary],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)', // blue
+                            'rgba(16, 185, 129, 0.7)', // green
+                            'rgba(239, 68, 68, 0.7)',  // red
+                            'rgba(139, 92, 246, 0.7)'  // purple
+                        ],
+                        borderColor: [
+                            'rgb(59, 130, 246)',
+                            'rgb(16, 185, 129)',
+                            'rgb(239, 68, 68)',
+                            'rgb(139, 92, 246)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    animation: {
+                        duration: 500
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Handle dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            
+            // If chart exists, update it with dark mode colors
+            if (budgetChart) {
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                budgetChart.options.scales.x.grid.color = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                budgetChart.options.scales.x.ticks.color = isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+                budgetChart.options.scales.y.ticks.color = isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+                budgetChart.update();
+            }
+        });
+
+        // Handle input changes
+        incomeInput.addEventListener('input', () => {
+            const income = parseFloat(incomeInput.value) || 0;
+            updateUI(income);
+        });
+
+        // Initialize with default values
+        updateUI(parseFloat(incomeInput.value));
+
+        // Add tailwind dark mode
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+    </script>
+</body>
+</html> 
