@@ -11,7 +11,7 @@
     <!-- Simple two-panel layout -->
     <div class="fixed inset-0 flex flex-nowrap overflow-hidden">
         <!-- Main Budget View -->
-        <div id="budgetView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out">
+        <div id="budgetView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out overflow-y-auto">
             <div class="container mx-auto px-4 py-8 max-w-lg">
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Budget Calculator</h1>
@@ -68,7 +68,7 @@
         </div>
 
         <!-- Goals View - simplified -->
-        <div id="goalsView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out translate-x-0">
+        <div id="goalsView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out translate-x-0 overflow-y-auto">
             <div class="container mx-auto px-4 py-8 max-w-lg">
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Savings Goals</h1>
@@ -290,20 +290,26 @@
             document.getElementById('goalsView').style.transform = 'translateX(0)';
         });
         
-        // Simple touch handling
+        // Modified touch handling to allow scrolling
         let xDown = null;
+        let yDown = null;
         
         document.addEventListener('touchstart', function(evt) {
             xDown = evt.touches[0].clientX;
+            yDown = evt.touches[0].clientY;
         }, false);
         
         document.addEventListener('touchend', function(evt) {
-            if (!xDown) return;
+            if (!xDown || !yDown) return;
             
             const xUp = evt.changedTouches[0].clientX;
-            const xDiff = xDown - xUp;
+            const yUp = evt.changedTouches[0].clientY;
             
-            if (Math.abs(xDiff) > 50) {
+            const xDiff = xDown - xUp;
+            const yDiff = yDown - yUp;
+            
+            // Only process as horizontal swipe if x movement > y movement
+            if (Math.abs(xDiff) > Math.abs(yDiff) && Math.abs(xDiff) > 50) {
                 if (xDiff > 0) {
                     // Swipe left - show goals
                     document.getElementById('budgetView').style.transform = 'translateX(-100%)';
@@ -313,9 +319,12 @@
                     document.getElementById('budgetView').style.transform = 'translateX(0)';
                     document.getElementById('goalsView').style.transform = 'translateX(0)';
                 }
+                // Prevent default for horizontal swipes
+                evt.preventDefault();
             }
             
             xDown = null;
+            yDown = null;
         }, false);
 
         // Render goals
