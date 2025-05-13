@@ -11,7 +11,7 @@
     <!-- Simple two-panel layout -->
     <div class="fixed inset-0 flex flex-nowrap overflow-hidden">
         <!-- Main Budget View -->
-        <div id="budgetView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out overflow-y-auto">
+        <div id="budgetView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out">
             <div class="container mx-auto px-4 py-8 max-w-lg">
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Budget Calculator</h1>
@@ -68,7 +68,7 @@
         </div>
 
         <!-- Goals View - simplified -->
-        <div id="goalsView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out translate-x-0 overflow-y-auto">
+        <div id="goalsView" class="flex-shrink-0 w-full h-full transition-transform duration-300 ease-in-out translate-x-0">
             <div class="container mx-auto px-4 py-8 max-w-lg">
                 <div class="flex justify-between items-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Savings Goals</h1>
@@ -131,7 +131,7 @@
         const savingsSection = document.getElementById('savingsSection');
         const billsSection = document.getElementById('billsSection');
         const discretionarySection = document.getElementById('discretionarySection');
-        const fixedBills = 7620;
+        const fixedBills = 7400;
         let budgetChart;
 
         // Calculate budget based on income
@@ -290,7 +290,7 @@
             document.getElementById('goalsView').style.transform = 'translateX(0)';
         });
         
-        // Modified touch handling to allow scrolling
+        // Simple touch handling
         let xDown = null;
         let yDown = null;
         
@@ -319,8 +319,6 @@
                     document.getElementById('budgetView').style.transform = 'translateX(0)';
                     document.getElementById('goalsView').style.transform = 'translateX(0)';
                 }
-                // Prevent default for horizontal swipes
-                evt.preventDefault();
             }
             
             xDown = null;
@@ -401,6 +399,7 @@
                     const input = e.target.parentNode.querySelector('.update-goal-input');
                     const newAmount = parseFloat(input.value) || 0;
                     
+                    const goals = JSON.parse(localStorage.getItem('savingsGoals')) || [];
                     goals[index].current = Math.min(goals[index].amount, Math.max(0, newAmount));
                     localStorage.setItem('savingsGoals', JSON.stringify(goals));
                     renderGoals();
@@ -410,6 +409,7 @@
             document.querySelectorAll('.delete-goal').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const index = parseInt(e.target.dataset.index);
+                    const goals = JSON.parse(localStorage.getItem('savingsGoals')) || [];
                     goals.splice(index, 1);
                     localStorage.setItem('savingsGoals', JSON.stringify(goals));
                     renderGoals();
@@ -418,8 +418,7 @@
         }
 
         // Handle new goal form submission
-        const newGoalForm = document.getElementById('newGoalForm');
-        newGoalForm.addEventListener('submit', (e) => {
+        document.getElementById('newGoalForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const name = document.getElementById('goalName').value;
@@ -428,6 +427,10 @@
             const type = document.querySelector('input[name="goalType"]:checked').value;
             
             if (name && amount > 0) {
+                // Get existing goals
+                const goals = JSON.parse(localStorage.getItem('savingsGoals')) || [];
+                
+                // Add new goal
                 goals.push({
                     name,
                     amount,
@@ -435,10 +438,16 @@
                     type
                 });
                 
+                // Save updated goals
                 localStorage.setItem('savingsGoals', JSON.stringify(goals));
-                newGoalForm.reset();
+                
+                // Reset form
+                document.getElementById('newGoalForm').reset();
+                
                 // Reset radio button to savings (default)
                 document.querySelector('input[name="goalType"][value="savings"]').checked = true;
+                
+                // Update display
                 renderGoals();
             }
         });
