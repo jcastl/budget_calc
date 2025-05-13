@@ -8,50 +8,118 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300">
-    <div class="container mx-auto px-4 py-8 max-w-lg">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Budget Calculator</h1>
-            <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                </svg>
-            </button>
-        </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <div class="mb-4">
-                <label for="income" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Monthly Income ($)</label>
-                <input type="number" id="income" value="10000" min="0" 
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
-            </div>
-        </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Budget Breakdown</h2>
-            <div class="space-y-4">
-                <div id="titheSection" class="border-l-4 border-blue-500 pl-3">
-                    <p class="font-medium text-gray-700 dark:text-gray-300">Tithe (10%)</p>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">$1,000</p>
-                </div>
-                <div id="savingsSection" class="border-l-4 border-green-500 pl-3">
-                    <p class="font-medium text-gray-700 dark:text-gray-300">Savings (10%)</p>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">$1,000</p>
-                </div>
-                <div id="billsSection" class="border-l-4 border-red-500 pl-3">
-                    <p class="font-medium text-gray-700 dark:text-gray-300">Bills (Fixed)</p>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">$7,400</p>
-                </div>
-                <div id="discretionarySection" class="border-l-4 border-purple-500 pl-3">
-                    <p class="font-medium text-gray-700 dark:text-gray-300">Discretionary Spending</p>
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">$600</p>
+    <div class="flex overflow-hidden w-full">
+        <!-- Main Budget View -->
+        <div id="budgetView" class="container mx-auto px-4 py-8 max-w-lg flex-shrink-0 w-full transition-transform duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Budget Calculator</h1>
+                <div class="flex items-center">
+                    <button id="goalsButton" class="mr-2 p-2 rounded-md bg-blue-500 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </button>
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                        </svg>
+                    </button>
                 </div>
             </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div class="mb-4">
+                    <label for="income" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Monthly Income ($)</label>
+                    <input type="number" id="income" value="10000" min="0" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Budget Breakdown</h2>
+                <div class="space-y-4">
+                    <div id="titheSection" class="border-l-4 border-blue-500 pl-3">
+                        <p class="font-medium text-gray-700 dark:text-gray-300">Tithe (10%)</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">$1,000</p>
+                    </div>
+                    <div id="savingsSection" class="border-l-4 border-green-500 pl-3">
+                        <p class="font-medium text-gray-700 dark:text-gray-300">Savings (10%)</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">$1,000</p>
+                    </div>
+                    <div id="billsSection" class="border-l-4 border-red-500 pl-3">
+                        <p class="font-medium text-gray-700 dark:text-gray-300">Bills (Fixed)</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">$7,400</p>
+                    </div>
+                    <div id="discretionarySection" class="border-l-4 border-purple-500 pl-3">
+                        <p class="font-medium text-gray-700 dark:text-gray-300">Discretionary Spending</p>
+                        <p class="text-lg font-bold text-gray-900 dark:text-white">$600</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Budget Visualization</h2>
+                <div class="h-64">
+                    <canvas id="budgetChart"></canvas>
+                </div>
+            </div>
         </div>
-        
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Budget Visualization</h2>
-            <div class="h-64">
-                <canvas id="budgetChart"></canvas>
+
+        <!-- Goals View -->
+        <div id="goalsView" class="container mx-auto px-4 py-8 max-w-lg flex-shrink-0 w-full transition-transform duration-300 transform translate-x-full">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Savings Goals</h1>
+                <div class="flex items-center">
+                    <button id="budgetButton" class="mr-2 p-2 rounded-md bg-blue-500 text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <div id="goalsList" class="space-y-6">
+                    <!-- Goals will be inserted here dynamically -->
+                </div>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Add New Goal</h2>
+                <form id="newGoalForm" class="space-y-4">
+                    <div>
+                        <label for="goalName" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Goal Name</label>
+                        <input type="text" id="goalName" required
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Goal Type</label>
+                        <div class="flex space-x-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="goalType" value="savings" checked class="form-radio text-blue-500">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">Savings Goal</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="goalType" value="debt" class="form-radio text-red-500">
+                                <span class="ml-2 text-gray-700 dark:text-gray-300">Debt Goal</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="goalAmount" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Target Amount ($)</label>
+                        <input type="number" id="goalAmount" min="1" required
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="goalCurrent" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Current Progress ($)</label>
+                        <input type="number" id="goalCurrent" min="0" value="0" required
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <button type="submit" 
+                        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md transition-colors">
+                        Add Goal
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -63,7 +131,7 @@
         const savingsSection = document.getElementById('savingsSection');
         const billsSection = document.getElementById('billsSection');
         const discretionarySection = document.getElementById('discretionarySection');
-        const fixedBills = 7620;
+        const fixedBills = 7570;
         let budgetChart;
 
         // Calculate budget based on income
@@ -210,6 +278,169 @@
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.documentElement.classList.add('dark');
         }
+
+        // Goals functionality
+        const budgetView = document.getElementById('budgetView');
+        const goalsView = document.getElementById('goalsView');
+        const budgetButton = document.getElementById('budgetButton');
+        const goalsButton = document.getElementById('goalsButton');
+        const goalsList = document.getElementById('goalsList');
+        const newGoalForm = document.getElementById('newGoalForm');
+        
+        let goals = JSON.parse(localStorage.getItem('savingsGoals')) || [];
+
+        // Switch between views
+        goalsButton.addEventListener('click', () => {
+            budgetView.classList.add('transform', '-translate-x-full');
+            goalsView.classList.remove('translate-x-full');
+        });
+
+        budgetButton.addEventListener('click', () => {
+            budgetView.classList.remove('transform', '-translate-x-full');
+            goalsView.classList.add('translate-x-full');
+        });
+
+        // Handle swipe gestures
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const SWIPE_THRESHOLD = 100;
+            if (touchEndX < touchStartX - SWIPE_THRESHOLD) {
+                // Swipe left - go to goals
+                budgetView.classList.add('transform', '-translate-x-full');
+                goalsView.classList.remove('translate-x-full');
+            }
+            if (touchEndX > touchStartX + SWIPE_THRESHOLD) {
+                // Swipe right - go to budget
+                budgetView.classList.remove('transform', '-translate-x-full');
+                goalsView.classList.add('translate-x-full');
+            }
+        }
+
+        // Render goals
+        function renderGoals() {
+            goalsList.innerHTML = '';
+            
+            if (goals.length === 0) {
+                goalsList.innerHTML = `
+                    <div class="text-center text-gray-500 dark:text-gray-400 py-4">
+                        No savings goals yet. Add your first goal below!
+                    </div>
+                `;
+                return;
+            }
+            
+            goals.forEach((goal, index) => {
+                // Calculate progress differently based on goal type
+                let progress;
+                let statusText;
+                
+                if (goal.type === 'debt') {
+                    // For debt goals, progress increases as current amount decreases
+                    progress = Math.min(100, Math.round((1 - (goal.current / goal.amount)) * 100));
+                    statusText = `${formatCurrency(goal.current)} owed of ${formatCurrency(goal.amount)}`;
+                } else {
+                    // For savings goals, progress increases as current amount increases
+                    progress = Math.min(100, Math.round((goal.current / goal.amount) * 100));
+                    statusText = `${formatCurrency(goal.current)} / ${formatCurrency(goal.amount)}`;
+                }
+                
+                const progressColor = progress < 33 ? 'bg-red-500' : progress < 66 ? 'bg-yellow-500' : 'bg-green-500';
+                const goalType = goal.type === 'debt' ? 
+                    '<span class="ml-2 px-2 py-0.5 text-xs bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 rounded-full">Debt</span>' : 
+                    '<span class="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">Savings</span>';
+                
+                const goalElement = document.createElement('div');
+                goalElement.className = 'border border-gray-200 dark:border-gray-700 rounded-lg p-4';
+                goalElement.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-semibold text-gray-800 dark:text-white flex items-center">
+                            ${goal.name}${goalType}
+                        </h3>
+                        <div>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">${statusText}</span>
+                        </div>
+                    </div>
+                    <div class="h-8 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden relative mb-3">
+                        <div class="${progressColor} h-full transition-all duration-500 ease-out" style="width: ${progress}%">
+                            <span class="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white">
+                                ${progress}% ${goal.type === 'debt' ? 'paid off' : 'saved'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <input type="number" class="update-goal-input px-3 py-1 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm" 
+                            value="${goal.current}" min="0" max="${goal.amount}">
+                        <button class="update-goal px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-sm transition-colors" 
+                            data-index="${index}">Update</button>
+                        <button class="delete-goal px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded-md text-sm transition-colors" 
+                            data-index="${index}">Delete</button>
+                    </div>
+                `;
+                
+                goalsList.appendChild(goalElement);
+            });
+            
+            // Add event listeners for update and delete buttons
+            document.querySelectorAll('.update-goal').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    const input = e.target.parentNode.querySelector('.update-goal-input');
+                    const newAmount = parseFloat(input.value) || 0;
+                    
+                    goals[index].current = Math.min(goals[index].amount, Math.max(0, newAmount));
+                    localStorage.setItem('savingsGoals', JSON.stringify(goals));
+                    renderGoals();
+                });
+            });
+            
+            document.querySelectorAll('.delete-goal').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    goals.splice(index, 1);
+                    localStorage.setItem('savingsGoals', JSON.stringify(goals));
+                    renderGoals();
+                });
+            });
+        }
+
+        // Handle new goal form submission
+        newGoalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('goalName').value;
+            const amount = parseFloat(document.getElementById('goalAmount').value);
+            const current = parseFloat(document.getElementById('goalCurrent').value) || 0;
+            const type = document.querySelector('input[name="goalType"]:checked').value;
+            
+            if (name && amount > 0) {
+                goals.push({
+                    name,
+                    amount,
+                    current: Math.min(amount, Math.max(0, current)),
+                    type
+                });
+                
+                localStorage.setItem('savingsGoals', JSON.stringify(goals));
+                newGoalForm.reset();
+                // Reset radio button to savings (default)
+                document.querySelector('input[name="goalType"][value="savings"]').checked = true;
+                renderGoals();
+            }
+        });
+
+        // Initialize
+        renderGoals();
     </script>
 </body>
 </html> 
