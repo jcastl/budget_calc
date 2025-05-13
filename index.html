@@ -27,6 +27,7 @@
                 </div>
             </div>
             
+            <!-- Existing Budget Calculator Content -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
                 <div class="mb-4">
                     <label for="income" class="block text-gray-700 dark:text-gray-300 font-medium mb-2">Monthly Income ($)</label>
@@ -131,7 +132,7 @@
         const savingsSection = document.getElementById('savingsSection');
         const billsSection = document.getElementById('billsSection');
         const discretionarySection = document.getElementById('discretionarySection');
-        const fixedBills = 7570;
+        const fixedBills = 7620;
         let budgetChart;
 
         // Calculate budget based on income
@@ -289,16 +290,43 @@
         
         let goals = JSON.parse(localStorage.getItem('savingsGoals')) || [];
 
-        // Switch between views - simplified approach
-        goalsButton.addEventListener('click', function() {
-            budgetView.style.transform = 'translateX(-100%)';
-            goalsView.style.transform = 'translateX(0)';
+        // Switch between views
+        goalsButton.addEventListener('click', () => {
+            budgetView.classList.add('transform', '-translate-x-full');
+            goalsView.classList.remove('translate-x-full');
         });
+
+        budgetButton.addEventListener('click', () => {
+            budgetView.classList.remove('transform', '-translate-x-full');
+            goalsView.classList.add('translate-x-full');
+        });
+
+        // Handle swipe gestures
+        let touchStartX = 0;
+        let touchEndX = 0;
         
-        budgetButton.addEventListener('click', function() {
-            budgetView.style.transform = 'translateX(0)';
-            goalsView.style.transform = 'translateX(100%)';
-        });
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+        
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+        
+        function handleSwipe() {
+            const SWIPE_THRESHOLD = 100;
+            if (touchEndX < touchStartX - SWIPE_THRESHOLD) {
+                // Swipe left - go to goals
+                budgetView.classList.add('transform', '-translate-x-full');
+                goalsView.classList.remove('translate-x-full');
+            }
+            if (touchEndX > touchStartX + SWIPE_THRESHOLD) {
+                // Swipe right - go to budget
+                budgetView.classList.remove('transform', '-translate-x-full');
+                goalsView.classList.add('translate-x-full');
+            }
+        }
 
         // Render goals
         function renderGoals() {
