@@ -289,43 +289,16 @@
         
         let goals = JSON.parse(localStorage.getItem('savingsGoals')) || [];
 
-        // Switch between views
-        goalsButton.addEventListener('click', () => {
-            budgetView.classList.add('transform', '-translate-x-full');
-            goalsView.classList.remove('translate-x-full');
+        // Switch between views - simplified approach
+        goalsButton.addEventListener('click', function() {
+            budgetView.style.transform = 'translateX(-100%)';
+            goalsView.style.transform = 'translateX(0)';
         });
-
-        budgetButton.addEventListener('click', () => {
-            budgetView.classList.remove('transform', '-translate-x-full');
-            goalsView.classList.add('translate-x-full');
+        
+        budgetButton.addEventListener('click', function() {
+            budgetView.style.transform = 'translateX(0)';
+            goalsView.style.transform = 'translateX(100%)';
         });
-
-        // Handle swipe gestures
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-        
-        document.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-        
-        function handleSwipe() {
-            const SWIPE_THRESHOLD = 100;
-            if (touchEndX < touchStartX - SWIPE_THRESHOLD) {
-                // Swipe left - go to goals
-                budgetView.classList.add('transform', '-translate-x-full');
-                goalsView.classList.remove('translate-x-full');
-            }
-            if (touchEndX > touchStartX + SWIPE_THRESHOLD) {
-                // Swipe right - go to budget
-                budgetView.classList.remove('transform', '-translate-x-full');
-                goalsView.classList.add('translate-x-full');
-            }
-        }
 
         // Render goals
         function renderGoals() {
